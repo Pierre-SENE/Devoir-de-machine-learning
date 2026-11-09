@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+*.zip
+ML 1-*/
+ML 2-*/
+ML 3-*/
+ML 4-*/
+slides*/
+Car_Data (1).csv
+Car_dataset.csv
