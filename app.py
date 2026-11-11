@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 
 # Configuration de la page
-st.set_page_config(page_title="Devoir Machine Learning", page_icon="🤖", layout="wide",
+st.set_page_config(page_title="Devoir Machine Learning", page_icon=":material/insights:", layout="wide",
                    initial_sidebar_state="collapsed")
 
 # Dossier de l'application (pour retrouver les fichiers models/ en local comme sur Streamlit Cloud)
@@ -93,6 +93,13 @@ html, body, [class*="css"], .stApp, button, input, textarea, select {
 /* ---------- Titre ---------- */
 .hello { font-size: 15px; color: var(--ink-2); margin: 4px 0 2px 4px; }
 .title { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); margin: 0 0 4px 4px; }
+.ico { vertical-align: -2px; margin-right: 6px; flex-shrink: 0; }
+.title { display: flex; align-items: center; gap: 14px; }
+.ticon {
+  width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; color: var(--accent);
+  background: var(--glass-strong); border: 1px solid var(--glass-border); box-shadow: 0 4px 16px rgba(70, 45, 25, 0.10);
+}
+.ticon .ico { margin: 0; vertical-align: 0; }
 .subtitle { font-size: 15px; color: var(--ink-2); margin: 0 0 20px 4px; }
 
 /* ---------- Grille des indicateurs ---------- */
@@ -238,6 +245,35 @@ def load_objects(dossier, nom_modele):
     return encoders, uniques, scaler, model
 
 
+# Icônes au trait fin (SVG de la bibliothèque Lucide : https://lucide.dev, licence ISC)
+LUCIDE = {
+    'smartphone': '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
+    'taxi': '<path d="M10 2h4"/><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.646 5H8.4a2 2 0 0 0-1.903 1.257L5 10 3 8"/>'
+            '<path d="M7 14h.01"/><path d="M17 14h.01"/><rect width="18" height="8" x="3" y="10" rx="2"/>'
+            '<path d="M5 18v2"/><path d="M19 18v2"/>',
+    'car_front': '<path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.646 5H8.4a2 2 0 0 0-1.903 1.257L5 10 3 8"/>'
+                 '<path d="M7 14h.01"/><path d="M17 14h.01"/><rect width="18" height="8" x="3" y="10" rx="2"/>'
+                 '<path d="M5 18v2"/><path d="M19 18v2"/>',
+    'car': '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3'
+           'c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>'
+           '<circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>',
+    'chart': '<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+    'award': '<path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686'
+             'a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/>',
+    'database': '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>',
+    'sparkles': '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5'
+                'l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063'
+                'a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>',
+}
+
+
+def icone(nom, taille=15):
+    # Renvoie l'icône Lucide en SVG (couleur = couleur du texte autour)
+    return (f'<svg class="ico" xmlns="http://www.w3.org/2000/svg" width="{taille}" height="{taille}" viewBox="0 0 24 24" '
+            f'fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">'
+            f'{LUCIDE[nom]}</svg>')
+
+
 def fr(x, d=1):
     # Nombre au format français (virgule décimale, espace pour les milliers)
     return f"{x:,.{d}f}".replace(",", " ").replace(".", ",")
@@ -282,13 +318,13 @@ def entete(infos):
     steps = "".join(f'<span class="step">{s}</span>' for s in infos['pipeline'])
 
     st.markdown(f"""
-<div class="title">{infos['emoji']} {infos['titre']}</div>
+<div class="title"><span class="ticon">{icone(infos['icone'], 24)}</span>{infos['titre']}</div>
 <div class="subtitle">{infos['description']}</div>
 <div class="grid">
   <div class="glass card">
     <div class="score-row">
       <div class="score-left">
-        <div class="label">{metrique} du meilleur modèle (validation)</div>
+        <div class="label">{icone('chart')}{metrique} du meilleur modèle (validation)</div>
         <div class="big">{valeur}</div>
         <span class="pill-up">{gain_txt}</span> <span class="muted">vs 2ᵉ meilleur algorithme</span>
         <div class="progress"><span style="width:{best_score * 100:.1f}%"></span></div>
@@ -298,13 +334,13 @@ def entete(infos):
     </div>
   </div>
   <div class="glass card ring-wrap">
-    <div class="label">Modèle retenu</div>
+    <div class="label">{icone('award')}Modèle retenu</div>
     {ring_html(best_score * 100, valeur, metrique)}
     <div style="font-weight:600">{infos['noms'][best]}</div>
     <div class="muted">GridSearchCV · KFold 5</div>
   </div>
   <div class="glass card">
-    <div class="label">Jeu de données</div>
+    <div class="label">{icone('database')}Jeu de données</div>
     <div class="facts">
       <div class="fact"><b>{fr(infos['lignes'], 0)}</b><span>lignes</span></div>
       <div class="fact"><b>{infos['variables']}</b><span>variables d'entrée</span></div>
@@ -321,7 +357,7 @@ def resultat_classification(label, proba):
     st.markdown(f"""
 <div class="glass result">
   {ring_html(proba * 100, f"{fr(proba * 100, 0)} %", "confiance")}
-  <div><div class="label">Prédiction</div><div class="value">{label}</div>
+  <div><div class="label">{icone('sparkles')}Prédiction</div><div class="value">{label}</div>
   <div class="muted">Probabilité donnée par le modèle pour cette classe</div></div>
 </div>""", unsafe_allow_html=True)
 
@@ -329,7 +365,7 @@ def resultat_classification(label, proba):
 def resultat_regression(valeur, unite, texte):
     st.markdown(f"""
 <div class="glass result">
-  <div><div class="label">{texte}</div><div class="value">{fr(valeur, 2)} {unite}</div>
+  <div><div class="label">{icone('sparkles')}{texte}</div><div class="value">{fr(valeur, 2)} {unite}</div>
   <div class="muted">Valeur estimée par le modèle</div></div>
 </div>""", unsafe_allow_html=True)
 
@@ -374,28 +410,28 @@ def onglet_multiple(cle, colonnes, pred_func, nom_colonne, preparation=None, exe
 # =====================================================================
 INFOS = {
     'Téléphone': dict(
-        emoji='📱', titre="État d'un téléphone", type='Classification', cible='etat',
+        icone='smartphone', titre="État d'un téléphone", type='Classification', cible='etat',
         description="Prédire si un téléphone est d'occasion, neuf, reconditionné ou venant.",
         scores={'LG': 0.680, 'DT': 0.8215, 'RF': 0.8708},
         noms={'LG': 'Logistic Regression', 'DT': 'Decision Tree', 'RF': 'Random Forest'},
         lignes=3253, variables=6, test="Modèle vu en classe (ML 1), réentraîné pour le déploiement",
         pipeline=['LabelEncoder', 'IQR + KNNImputer', 'MinMaxScaler', 'GridSearchCV']),
     'Taxi': dict(
-        emoji='🚕', titre="Prix d'un trajet de taxi", type='Régression', cible='Trip_Price',
+        icone='taxi', titre="Prix d'un trajet de taxi", type='Régression', cible='Trip_Price',
         description="Estimer le prix d'une course à partir de la distance, la durée, la météo et les tarifs.",
         scores={'LR': 0.8645, 'RR': 0.8643, 'DT': 0.7922, 'RF': 0.9052},
         noms={'LR': 'Linear Regression', 'RR': 'Ridge', 'DT': 'Decision Tree', 'RF': 'Random Forest'},
         lignes=1000, variables=10, test="Modèle vu en classe (ML 2), réentraîné pour le déploiement",
         pipeline=['Mode + KNNImputer', 'LabelEncoder', 'IQR + KNNImputer', 'RobustScaler', 'GridSearchCV']),
     'Car Data': dict(
-        emoji='🚗', titre="Car Data : venant ou d'occasion ?", type='Classification', cible='Venant_Occasion',
+        icone='car_front', titre="Car Data : venant ou d'occasion ?", type='Classification', cible='Venant_Occasion',
         description="Adresse séparée sur la virgule : on garde le quartier, la région (Dakar) est supprimée.",
         scores={'LG': 0.7913, 'DT': 0.8094, 'RF': 0.8040},
         noms={'LG': 'Logistic Regression', 'DT': 'Decision Tree', 'RF': 'Random Forest'},
         lignes=5507, variables=5, test="Accuracy sur les données test : 78,2 %",
         pipeline=['Split adresse', 'LabelEncoder', 'IQR + KNNImputer', 'MinMaxScaler', 'GridSearchCV']),
     'Car Dataset': dict(
-        emoji='🚙', titre="Car Dataset : prix de vente", type='Régression', cible='Selling_Price',
+        icone='car', titre="Car Dataset : prix de vente", type='Régression', cible='Selling_Price',
         description="Estimer le prix de vente d'une voiture d'occasion.",
         scores={'LR': 0.6498, 'RR': 0.6498, 'DT': 0.8338, 'RF': 0.8788},
         noms={'LR': 'Linear Regression', 'RR': 'Ridge', 'DT': 'Decision Tree', 'RF': 'Random Forest'},
@@ -606,7 +642,10 @@ st.markdown('<div class="hello">Tableau de bord du devoir</div>', unsafe_allow_h
 # Navigation entre les 4 modèles (pilule)
 PAGES = {'Téléphone': page_telephone, 'Taxi': page_taxi,
          'Car Data': page_car_data, 'Car Dataset': page_car_dataset}
+ICONES_NAV = {'Téléphone': ':material/smartphone:', 'Taxi': ':material/local_taxi:',
+              'Car Data': ':material/directions_car:', 'Car Dataset': ':material/sell:'}
 choix = st.segmented_control('Choisir un modèle', list(PAGES.keys()), default='Téléphone',
+                             format_func=lambda nom: f"{ICONES_NAV[nom]} {nom}",
                              label_visibility='collapsed', key='nav')
 if choix is None:
     choix = 'Téléphone'
