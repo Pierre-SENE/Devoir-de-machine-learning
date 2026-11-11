@@ -9,3 +9,8 @@ ML 4-*/
 slides*/
 Car_Data (1).csv
 Car_dataset.csv
+
+# Fichiers personnels (pas pour le dépôt public)
+*.mp4
+*.jpg
+Rapport_incident_*.pdf
